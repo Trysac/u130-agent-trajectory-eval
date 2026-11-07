@@ -1,29 +1,18 @@
 # Architecture
 
-## Purpose
+`agent-trajectory-eval` provides deterministic evaluations of agent interaction trajectories.
 
-`trysac-agent-trajectory-eval` is a small, dependency-free Python library: Evaluate recorded agent trajectories against expectations: tool sequence modes, forbidden tools, step budgets, repeated calls, argument and final-answer checks
+## Design Principles
 
-## Shape
-
-```text
-caller code --> agent_trajectory_eval (public API in __init__.py)
-                    |
-                    +-- pure functions, no I/O, no global state
-```
-
-- **Public API**: the names listed in `__all__` of `src/agent_trajectory_eval/__init__.py`. Anything else is
-  internal and may change without a major version.
-- **Errors**: invalid input raises built-in exceptions (`ValueError`, `TypeError`) with a clear
-  message; the library never prints or exits.
-- **Side effects**: none. If a feature needs I/O, isolate it in its own module behind a small
-  interface and record the choice in an ADR.
-
-## Quality contract
-
-`scripts/check.py` is the single definition of the gates; `fabrica.json` tells the factory and CI
-how to run it. See [TESTING.md](TESTING.md).
-
-## Decisions
-
-Architecture decisions are recorded in [decisions/](decisions/) as numbered ADRs.
+1. **Zero External Dependencies**: Built entirely on standard Python 3.10+ libraries.
+2. **Strict Invariant Validation**: Trajectories, step sequences, expectations, and suite input sizes are verified against strict upper bounds prior to execution.
+3. **Deterministic Check Ordering**: Checks run in a predictable, fixed order:
+   - `tools_exact` / `tools_ordered` / `tools_unordered`
+   - `forbidden_tool`
+   - `max_steps`
+   - `tool_errors`
+   - `repeated_call`
+   - `args_match`
+   - `final_contains`
+   - `final_regex`
+4. **Explainable Diagnostics**: Failures produce human-readable, machine-verifiable detail messages.
