@@ -1,48 +1,44 @@
 # agent-trajectory-eval
 
-[![PyPI version](https://img.shields.io/pypi/v/trysac-agent-trajectory-eval)](https://pypi.org/project/trysac-agent-trajectory-eval/)
-[![License: MIT](https://img.shields.io/pypi/l/trysac-agent-trajectory-eval)](LICENSE)
-[![CI](https://github.com/Trysac/u130-agent-trajectory-eval/actions/workflows/ci.yml/badge.svg)](https://github.com/Trysac/u130-agent-trajectory-eval/actions/workflows/ci.yml)
+Agent evaluations usually check only the final answer, so agents that delete files, loop, or blow budget might pass. This library scores a recorded trajectory against declarative expectations with named, deterministic checks and a suite report usable in CI.
 
-Evaluate recorded agent trajectories against expectations: tool sequence modes, forbidden tools, step budgets, repeated calls, argument and final-answer checks
+## Installation
 
-## Problem
-
-Describe in two or three sentences the concrete problem this utility solves, who hits it, and what
-they do today without it. Replace this paragraph when the first real feature lands.
-
-## Install
-
-```sh
+```bash
 pip install trysac-agent-trajectory-eval
-# or
-uv add trysac-agent-trajectory-eval
 ```
-
-Requires Python 3.10 or newer. No runtime dependencies.
 
 ## Usage
 
 ```python
-import agent_trajectory_eval
+from agent_trajectory_eval import Step, Trajectory, Expectation, evaluate
 
-# normalize() trims surrounding whitespace and lower-cases the text.
-print(agent_trajectory_eval.normalize("  Hello World "))  # -> "hello world"
-
-# Blank input is rejected explicitly instead of returning an empty string.
-try:
-    agent_trajectory_eval.normalize("   ")
-except ValueError as exc:
-    print(f"rejected: {exc}")
+traj = Trajectory(
+    id="t1",
+    steps=(Step(type="tool_call", tool="search", args={"q": "paris"}, ok=True),),
+    final="Paris",
+)
+res = evaluate(traj, Expectation(tools_mode="ordered", tools=("search",)))
+print(res.passed)
 ```
 
-## Documentation
+## API Summary
 
-- [Architecture](docs/ARCHITECTURE.md) and [decisions](docs/decisions/)
-- [Testing](docs/TESTING.md) and [security](docs/SECURITY.md)
-- [Project record](docs/PROJECT.md) and [stack](docs/STACK.md)
-- [Changelog](CHANGELOG.md) and [contributing guide](CONTRIBUTING.md)
+### Errors
+All validation errors raise `TrajectoryError` with codes: `input_too_large`, `too_many_steps`, `invalid_trajectory`, `invalid_expectation`, `final_too_large`, `invalid_json`.
 
-## License
+### Limits
+- Suite size: 10 MiB (`MAX_SUITE_BYTES`)
+- Steps per trajectory: 10,000 (`MAX_STEPS`)
+- Characters in final answer: 100,000 (`MAX_FINAL_CHARS`)
+- JSON depth: 64 (`MAX_JSON_DEPTH`)
+- Regex length: 1,000 (`MAX_REGEX_LEN`)
 
-[MIT](LICENSE) (c) 2026 Miguel Gomez
+### Options
+Expectations support: `tools_mode` ('exact', 'ordered', 'unordered'), `tools`, `forbidden_tools`, `max_steps`, `final_contains`, `final_regex`, `args_match`, `check_errors`, and `check_repeats`.
+
+## Why not alternative?
+Unlike final-answer-only harnesses, this utility provides deterministic, explainable process checks over the whole trajectory.
+
+## Security
+For threat model and limits, see [docs/SECURITY.md](docs/SECURITY.md).

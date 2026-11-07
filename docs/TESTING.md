@@ -15,6 +15,6 @@ uv run python scripts/check.py      # every gate, as CI and the factory run it
 - Each bug fix starts with a failing test that reproduces it.
 - Tests are deterministic: no network, no wall clock, no dependence on test order.
 
-## Layout
+## Tests
 
-`tests/test_<module>.py` mirrors each public module. Shared fixtures go in `tests/conftest.py`.
+`tests/test_agent_trajectory_eval.py` covers unit and acceptance logic for `Trajectory`, `Step`, `Expectation`, `load_suite`, and `evaluate`.

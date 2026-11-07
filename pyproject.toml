@@ -19,6 +19,9 @@ classifiers = [
 ]
 dependencies = []
 
+[project.scripts]
+agent-trajectory-eval = "agent_trajectory_eval.__main__:main"
+
 [project.urls]
 Homepage = "https://github.com/Trysac/u130-agent-trajectory-eval"
 Source = "https://github.com/Trysac/u130-agent-trajectory-eval"

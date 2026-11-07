@@ -9,4 +9,5 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Implement trajectory evaluation engine and CLI for tool sequences, step budgets, repeats, arguments, and final outputs.
 - Initial project structure from the factory utility template.
