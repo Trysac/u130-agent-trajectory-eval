@@ -4,8 +4,10 @@ Agent evaluations usually check only the final answer, so agents that delete fil
 
 ## Installation
 
+Not published to PyPI yet. Install it from GitHub:
+
 ```bash
-pip install trysac-agent-trajectory-eval
+pip install "git+https://github.com/Trysac/u130-agent-trajectory-eval"
 ```
 
 ## Usage
